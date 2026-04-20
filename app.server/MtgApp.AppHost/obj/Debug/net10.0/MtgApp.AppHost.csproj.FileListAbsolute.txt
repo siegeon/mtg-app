@@ -1,0 +1,6 @@
+/home/siegeon/dev/mtg-app/app.server/MtgApp.AppHost/obj/Debug/net10.0/MtgApp.AppHost.csproj.AssemblyReference.cache
+/home/siegeon/dev/mtg-app/app.server/MtgApp.AppHost/obj/Debug/net10.0/MtgApp.AppHost.GeneratedMSBuildEditorConfig.editorconfig
+/home/siegeon/dev/mtg-app/app.server/MtgApp.AppHost/obj/Debug/net10.0/MtgApp.AppHost.AssemblyInfoInputs.cache
+/home/siegeon/dev/mtg-app/app.server/MtgApp.AppHost/obj/Debug/net10.0/MtgApp.AppHost.AssemblyInfo.cs
+/home/siegeon/dev/mtg-app/app.server/MtgApp.AppHost/obj/Debug/net10.0/MtgApp.AppHost.csproj.CoreCompileInputs.cache
+/home/siegeon/dev/mtg-app/app.server/MtgApp.AppHost/obj/Debug/net10.0/MtgApp.AppHost.sourcelink.json

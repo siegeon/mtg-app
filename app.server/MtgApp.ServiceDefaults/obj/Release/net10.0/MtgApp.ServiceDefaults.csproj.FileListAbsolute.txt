@@ -1,0 +1,13 @@
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/obj/Release/net10.0/MtgApp.ServiceDefaults.csproj.AssemblyReference.cache
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/obj/Release/net10.0/MtgApp.ServiceDefaults.GeneratedMSBuildEditorConfig.editorconfig
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/obj/Release/net10.0/MtgApp.ServiceDefaults.AssemblyInfoInputs.cache
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/obj/Release/net10.0/MtgApp.ServiceDefaults.AssemblyInfo.cs
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/obj/Release/net10.0/MtgApp.ServiceDefaults.csproj.CoreCompileInputs.cache
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/obj/Release/net10.0/MtgApp.ServiceDefaults.sourcelink.json
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/bin/Release/net10.0/MtgApp.ServiceDefaults.deps.json
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/bin/Release/net10.0/MtgApp.ServiceDefaults.dll
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/bin/Release/net10.0/MtgApp.ServiceDefaults.pdb
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/obj/Release/net10.0/MtgApp.ServiceDefaults.dll
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/obj/Release/net10.0/refint/MtgApp.ServiceDefaults.dll
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/obj/Release/net10.0/MtgApp.ServiceDefaults.pdb
+/home/siegeon/dev/mtg-app/app.server/MtgApp.ServiceDefaults/obj/Release/net10.0/ref/MtgApp.ServiceDefaults.dll

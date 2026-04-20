@@ -1,0 +1,31 @@
+{
+  "mcpServers": {
+    "aspire": {
+      "type": "stdio",
+      "command": "/home/siegeon/.dotnet/tools/aspire",
+      "args": ["agent", "mcp"],
+      "env": {
+        "PATH": "/home/siegeon/.dotnet/tools:/home/siegeon/.dotnet:/usr/local/bin:/usr/bin:/bin",
+        "DOTNET_ROOT": "/home/siegeon/.dotnet"
+      }
+    },
+    "storybook": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "storybook-mcp@latest"],
+      "env": {
+        "STORYBOOK_URL": "http://localhost:6006/index.json"
+      }
+    },
+    "shadcn": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"]
+    },
+    "tailwindcss": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "tailwindcss-mcp"]
+    }
+  }
+}
