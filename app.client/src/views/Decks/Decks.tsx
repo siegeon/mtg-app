@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronUp,
@@ -7,11 +7,13 @@ import {
   Calendar,
   DollarSign,
   Library,
-  Play
+  Play,
+  Search
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { DURATIONS, EASINGS, useAnimationVariants } from '../../lib/motion';
-import { mockDecks, getColorIdentityDisplay, mockPreviewCards, type DeckSummary } from './mockDecksData';
+import { mockDecks, getColorIdentityDisplay, mockPreviewCards, type DeckSummary } from '../../components/AppShell/mockDecksData';
+import { useAppShell } from '../../contexts/AppShellContext';
 
 interface HoveredCardState {
   card: any;
@@ -25,6 +27,25 @@ const formatPrice = (value: number) => {
   }
   return `$${value.toFixed(0)}`;
 };
+
+const Dropdown = ({ options, value, onChange }: {
+  options: string[];
+  value: string;
+  onChange: (value: string) => void;
+}) => (
+  <div className="relative">
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="h-8 pl-3 pr-8 bg-slate-800/50 border border-white/10 rounded text-sm text-white appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+    >
+      {options.map((option) => (
+        <option key={option} value={option}>{option}</option>
+      ))}
+    </select>
+    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
+  </div>
+);
 
 const DeckRow: React.FC<{
   deck: DeckSummary;
@@ -280,11 +301,14 @@ const DeckPreview: React.FC<{
   );
 };
 
-export const DecksView: React.FC = () => {
+export const Decks: React.FC = () => {
+  const { setFilterControls, setFilterChips, setResultCounter } = useAppShell();
   const [selectedDeck, setSelectedDeck] = useState<DeckSummary | null>(mockDecks[0]);
   const [sortField, setSortField] = useState('lastEdited');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [hoveredCard, setHoveredCard] = useState<HoveredCardState | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [formatFilter, setFormatFilter] = useState('All Formats');
 
   const handleSort = (field: string) => {
     if (sortField === field) {
@@ -295,26 +319,129 @@ export const DecksView: React.FC = () => {
     }
   };
 
-  const sortedDecks = [...mockDecks].sort((a, b) => {
-    let aVal: any = a[sortField as keyof DeckSummary];
-    let bVal: any = b[sortField as keyof DeckSummary];
+  // Filter and sort decks
+  const filteredAndSortedDecks = useMemo(() => {
+    let filtered = mockDecks;
 
-    if (sortField === 'lastEdited') {
-      // Simple sort by string for demo
-      aVal = a.lastEdited;
-      bVal = b.lastEdited;
+    // Apply search filter
+    if (searchTerm.trim()) {
+      const search = searchTerm.toLowerCase();
+      filtered = filtered.filter(deck =>
+        deck.name.toLowerCase().includes(search) ||
+        deck.commander?.toLowerCase().includes(search)
+      );
     }
 
-    if (typeof aVal === 'string') {
-      return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+    // Apply format filter
+    if (formatFilter !== 'All Formats') {
+      filtered = filtered.filter(deck => deck.format === formatFilter);
     }
 
-    if (typeof aVal === 'number') {
-      return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
-    }
+    // Sort
+    return [...filtered].sort((a, b) => {
+      let aVal: any = a[sortField as keyof DeckSummary];
+      let bVal: any = b[sortField as keyof DeckSummary];
 
-    return 0;
-  });
+      if (sortField === 'lastEdited') {
+        aVal = a.lastEdited;
+        bVal = b.lastEdited;
+      }
+
+      if (typeof aVal === 'string') {
+        return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      }
+
+      if (typeof aVal === 'number') {
+        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+      }
+
+      return 0;
+    });
+  }, [searchTerm, formatFilter, sortField, sortDirection]);
+
+  // Generate filter chips
+  const filterChips: { label: string; onRemove(): void }[] = [];
+  if (searchTerm.trim()) {
+    filterChips.push({
+      label: `"${searchTerm.trim()}"`,
+      onRemove: () => setSearchTerm('')
+    });
+  }
+  if (formatFilter !== 'All Formats') {
+    filterChips.push({
+      label: formatFilter,
+      onRemove: () => setFormatFilter('All Formats')
+    });
+  }
+
+  // Result counter
+  const resultCount = {
+    showing: filteredAndSortedDecks.length,
+    total: mockDecks.length
+  };
+
+  // Get unique formats for dropdown
+  const formatOptions = ['All Formats', ...Array.from(new Set(mockDecks.map(deck => deck.format)))];
+
+  // Filter controls for top bar row 2
+  const filterControlsElement = useMemo(() => (
+    <div className="flex items-center gap-4">
+      {/* Deck Search */}
+      <div className="relative w-52">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500" size={16} />
+        <input
+          type="text"
+          placeholder="Search decks..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full h-8 pl-9 pr-3 bg-slate-800/50 border border-white/10 rounded text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+        />
+      </div>
+
+      <Dropdown
+        options={formatOptions}
+        value={formatFilter}
+        onChange={setFormatFilter}
+      />
+
+      <Dropdown
+        options={['lastEdited', 'name', 'format', 'totalValue'].map(field => {
+          const labels = {
+            lastEdited: 'Last Edited',
+            name: 'Name (A-Z)',
+            format: 'Format',
+            totalValue: 'Value (High-Low)'
+          };
+          return labels[field as keyof typeof labels];
+        })}
+        value={(() => {
+          const labels = {
+            lastEdited: 'Last Edited',
+            name: 'Name (A-Z)',
+            format: 'Format',
+            totalValue: 'Value (High-Low)'
+          };
+          return labels[sortField as keyof typeof labels] || 'Last Edited';
+        })()}
+        onChange={(value) => {
+          const fieldMap = {
+            'Last Edited': 'lastEdited',
+            'Name (A-Z)': 'name',
+            'Format': 'format',
+            'Value (High-Low)': 'totalValue'
+          };
+          setSortField(fieldMap[value as keyof typeof fieldMap] || 'lastEdited');
+        }}
+      />
+    </div>
+  ), [searchTerm, formatFilter, formatOptions, sortField]);
+
+  // Update AppShell context whenever state changes
+  useEffect(() => {
+    setFilterControls(filterControlsElement);
+    setFilterChips(filterChips);
+    setResultCounter(resultCount);
+  }, [setFilterControls, setFilterChips, setResultCounter, filterControlsElement, filterChips, resultCount]);
 
   const handleCardHover = (card: any, element: HTMLElement) => {
     const rect = element.getBoundingClientRect();
@@ -331,19 +458,11 @@ export const DecksView: React.FC = () => {
   };
 
   return (
-    <div className="relative h-screen bg-slate-950 text-white overflow-hidden">
+    <div className="relative h-full">
       {/* Main Layout - Two Columns */}
       <div className="grid grid-cols-[1fr_400px] h-full">
         {/* Left Column - Deck Table */}
         <div className="flex flex-col">
-          {/* Header */}
-          <div className="p-6 border-b border-gray-700/50">
-            <h1 className="text-2xl font-bold mb-2">My Decks</h1>
-            <p className="text-slate-400">
-              Manage your deck collection and brew new strategies
-            </p>
-          </div>
-
           {/* Table */}
           <div className="flex-1 overflow-auto">
             <table className="w-full">
@@ -389,7 +508,7 @@ export const DecksView: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {sortedDecks.map((deck) => (
+                {filteredAndSortedDecks.map((deck) => (
                   <DeckRow
                     key={deck.id}
                     deck={deck}

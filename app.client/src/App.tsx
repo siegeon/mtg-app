@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
 import { DeckBuilderPage } from './pages/DeckBuilderPage'
-import { DecksViewPage } from './pages/DecksView'
+import { DecksPage } from './pages/DecksPage'
 import { CollectionPage } from './pages/CollectionPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { AppShell } from './components/AppShell/AppShell'
@@ -83,7 +83,7 @@ function AppContent() {
     >
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/decks" element={<DecksViewPage />} />
+        <Route path="/decks" element={<DecksPage />} />
         <Route path="/deck/:id" element={<DeckBuilderPage />} />
         <Route path="/collection" element={<CollectionPage />} />
         <Route path="/cards" element={<PlaceholderPage title="Cards" />} />
