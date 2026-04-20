@@ -13,7 +13,8 @@ import {
   ChevronRight,
   Bookmark,
   Play,
-  Zap
+  Zap,
+  X
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -28,6 +29,12 @@ interface AppShellProps {
   onNavClick?: (navId: string) => void;
   /** Primary CTA click handler */
   onCTAClick?: (label: string) => void;
+  /** Filter controls for top bar row 2 */
+  filterControls?: React.ReactNode;
+  /** Filter chips for top bar row 3 */
+  filterChips?: { label: string; onRemove(): void }[];
+  /** Result counter for top bar row 3 */
+  resultCounter?: { showing: number; total: number };
 }
 
 const getPrimaryAction = (activeNav?: string) => {
@@ -85,12 +92,38 @@ const NavItem = ({ item, isActive, onClick }: { item: any; isActive: boolean; on
   );
 };
 
+// Filter chip component for row 3
+const FilterChip = ({ label, onRemove }: { label: string; onRemove: () => void }) => (
+  <motion.div
+    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/20 text-violet-700 dark:text-violet-300 text-xs font-medium border border-violet-500/30"
+    initial={{ scale: 0.9, opacity: 0 }}
+    animate={{ scale: 1, opacity: 1 }}
+    exit={{ scale: 0.9, opacity: 0 }}
+    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+  >
+    <span className="select-none">{label}</span>
+    <motion.button
+      type="button"
+      onClick={onRemove}
+      className="flex items-center justify-center w-4 h-4 rounded-full bg-violet-600/20 hover:bg-violet-600/40 text-violet-600 dark:text-violet-400 transition-colors duration-150"
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      aria-label={`Remove ${label} filter`}
+    >
+      <X size={10} />
+    </motion.button>
+  </motion.div>
+);
+
 export const AppShell: React.FC<AppShellProps> = ({
   currentPage = 'Dashboard',
   activeNav,
   children,
   onNavClick,
-  onCTAClick
+  onCTAClick,
+  filterControls,
+  filterChips,
+  resultCounter
 }) => {
   const primaryAction = getPrimaryAction(activeNav);
   return (
@@ -99,7 +132,7 @@ export const AppShell: React.FC<AppShellProps> = ({
       <div className="fixed left-0 top-0 h-full w-56 bg-slate-950/90 border-r border-white/10 backdrop-blur-sm">
         <div className="flex flex-col h-full">
           {/* Logo/Brand Area */}
-          <div className="p-6 border-b border-white/10">
+          <div className="h-16 px-6 flex items-center border-b border-white/10">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">M</span>
@@ -156,29 +189,44 @@ export const AppShell: React.FC<AppShellProps> = ({
 
       {/* Main Content Area */}
       <div className="ml-56 min-h-screen">
-        {/* Top Bar */}
-        <header className="h-16 bg-slate-950/50 border-b border-white/10 backdrop-blur-sm">
-          <div className="h-full px-6 flex items-center justify-between">
+        {/* Top Bar - Three-zone header (adaptive rows) */}
+        <header className="bg-slate-950/50 border-b border-white/10 backdrop-blur-sm">
+          {/* Row 1: Breadcrumb */}
+          <div className="h-16 px-6 flex items-center border-b border-white/5">
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-slate-400">
               <Home size={16} />
               <ChevronRight size={14} />
               <span className="text-white font-medium">{currentPage}</span>
             </div>
-
-            {/* Search */}
-            <div className="relative max-w-md flex-1 mx-8">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500" size={18} />
-              <input
-                type="text"
-                placeholder="Search cards..."
-                className="w-full bg-slate-800/50 border border-white/10 rounded-md pl-10 pr-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-              />
-            </div>
-
-            {/* Right side placeholder */}
-            <div className="w-24"></div>
           </div>
+
+          {/* Row 2: Filter Controls (only if provided) */}
+          {filterControls && (
+            <div className="px-6 py-3 border-b border-white/5">
+              {filterControls}
+            </div>
+          )}
+
+          {/* Row 3: Filter Chips + Result Counter (only if chips or counter provided) */}
+          {(filterChips?.length || resultCounter) && (
+            <div className="px-6 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {filterChips?.map((chip, index) => (
+                  <FilterChip
+                    key={index}
+                    label={chip.label}
+                    onRemove={chip.onRemove}
+                  />
+                ))}
+              </div>
+              {resultCounter && (
+                <span className="text-sm text-slate-400">
+                  Showing {resultCounter.showing.toLocaleString()} of {resultCounter.total.toLocaleString()}
+                </span>
+              )}
+            </div>
+          )}
         </header>
 
         {/* Main Content */}

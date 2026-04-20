@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MtgApp.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e87b4b2fdd2ff62bd5b4b6207761829fa9e4d7e9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+68b831da5a55d85e3630f02edd028af9219ec057")]
 [assembly: System.Reflection.AssemblyProductAttribute("MtgApp.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MtgApp.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -5,10 +5,18 @@ import { DecksViewPage } from './pages/DecksView'
 import { CollectionPage } from './pages/CollectionPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { AppShell } from './components/AppShell/AppShell'
+import { AppShellProvider, useAppShell } from './contexts/AppShellContext'
+import { useEffect } from 'react'
 
 function AppContent() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { filterControls, filterChips, resultCounter, clearAll } = useAppShell()
+
+  // Clear AppShell props on route change
+  useEffect(() => {
+    clearAll()
+  }, [location.pathname, clearAll])
 
   // Derive activeNav from current location
   const getActiveNav = (pathname: string) => {
@@ -69,6 +77,9 @@ function AppContent() {
       activeNav={activeNav}
       onNavClick={handleNavClick}
       onCTAClick={handleCTAClick}
+      filterControls={filterControls}
+      filterChips={filterChips}
+      resultCounter={resultCounter}
     >
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -88,7 +99,9 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <AppShellProvider>
+        <AppContent />
+      </AppShellProvider>
     </Router>
   )
 }

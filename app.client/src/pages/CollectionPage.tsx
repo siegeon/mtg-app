@@ -1,5 +1,6 @@
-import { CollectionView } from '../components/AppShell/CollectionView';
+import React from 'react';
+import { Collection } from '../views/Collection/Collection';
 
 export const CollectionPage: React.FC = () => {
-  return <CollectionView />;
+  return <Collection />;
 };

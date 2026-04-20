@@ -211,14 +211,12 @@ namespace MtgApp.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Cards_ColorIdentity",
                 table: "Cards",
-                column: "ColorIdentity")
-                .Annotation("Npgsql:IndexMethod", "gin");
+                column: "ColorIdentity");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cards_Colors",
                 table: "Cards",
-                column: "Colors")
-                .Annotation("Npgsql:IndexMethod", "gin");
+                column: "Colors");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cards_ConvertedManaCost",
@@ -228,14 +226,12 @@ namespace MtgApp.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Cards_Keywords",
                 table: "Cards",
-                column: "Keywords")
-                .Annotation("Npgsql:IndexMethod", "gin");
+                column: "Keywords");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cards_Legalities",
                 table: "Cards",
-                column: "Legalities")
-                .Annotation("Npgsql:IndexMethod", "gin");
+                column: "Legalities");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cards_Name",
@@ -258,11 +254,8 @@ namespace MtgApp.Infrastructure.Migrations
                 column: "ScryfallId",
                 unique: true);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Cards_SearchText_FTS",
-                table: "Cards",
-                column: "SearchText")
-                .Annotation("Npgsql:IndexMethod", "gin");
+            // Create full-text search index using proper PostgreSQL syntax
+            migrationBuilder.Sql("CREATE INDEX IF NOT EXISTS \"IX_Cards_SearchText_FTS\" ON \"Cards\" USING gin(to_tsvector('english', \"SearchText\"));");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cards_Set",

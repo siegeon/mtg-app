@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Temporary SQLite for MVP testing (comment out for Aspire)
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=mtgapp.db"));
+// Add service defaults (Aspire) - production configuration
+builder.AddServiceDefaults();
+builder.AddNpgsqlDbContext<AppDbContext>("mtgapp");
 
-// Add service defaults (Aspire) - commented out for MVP testing
-// builder.AddServiceDefaults();
-// builder.AddNpgsqlDbContext<AppDbContext>("mtgdb");
+// Temporary SQLite for MVP testing - now disabled for production
+// builder.Services.AddDbContext<AppDbContext>(options =>
+//     options.UseSqlite("Data Source=mtgapp.db"));
 
 // Add services
 builder.Services.AddControllers();
@@ -64,7 +64,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline
-// app.MapDefaultEndpoints(); // Commented out for MVP testing
+app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
