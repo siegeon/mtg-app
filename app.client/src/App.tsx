@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { HomePage } from './pages/HomePage'
 import { DeckBuilderPage } from './pages/DeckBuilderPage'
 import { DecksPage } from './pages/DecksPage'
@@ -7,6 +8,17 @@ import { PlaceholderPage } from './pages/PlaceholderPage'
 import { AppShell } from './components/AppShell/AppShell'
 import { AppShellProvider, useAppShell } from './contexts/AppShellContext'
 import { useEffect } from 'react'
+
+// Create a client outside component to avoid recreation
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 function AppContent() {
   const location = useLocation()
@@ -98,11 +110,13 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppShellProvider>
-        <AppContent />
-      </AppShellProvider>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <AppShellProvider>
+          <AppContent />
+        </AppShellProvider>
+      </Router>
+    </QueryClientProvider>
   )
 }
 

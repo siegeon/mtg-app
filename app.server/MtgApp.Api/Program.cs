@@ -1,5 +1,5 @@
 using MtgApp.Infrastructure.Data;
-using MtgApp.Api.Services;
+// using MtgApp.Api.Services; // Temporarily disabled - schema migration in progress
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +15,7 @@ builder.AddNpgsqlDbContext<AppDbContext>("mtgapp");
 // Add services
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddScoped<CardSearchService>();
+// builder.Services.AddScoped<CardSearchService>(); // Temporarily disabled - schema migration in progress
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>

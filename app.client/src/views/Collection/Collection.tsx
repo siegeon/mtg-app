@@ -1,18 +1,27 @@
-import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'motion/react';
-import { ChevronDown, Search } from 'lucide-react';
+import { useState, useEffect, useMemo, useCallback, memo } from 'react';
+import { motion, stagger, useAnimate } from 'motion/react';
+import { ChevronDown, Search, AlertCircle } from 'lucide-react';
 import { ManaPipGroup } from '../../elements/ManaPip/ManaPip';
 import { useAppShell } from '../../contexts/AppShellContext';
+import { CardImageWithHover } from '../../components/CardImage';
+import { useCardsSearch, useDefaultCollection, type CollectionCard } from '../../hooks/useCardsApi';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
-// Sample card data
-const sampleCards = [
-  { id: 1, name: 'Lightning Bolt', type: 'Instant', rarity: 'Common', price: '$0.50', quantity: 4 },
-  { id: 2, name: 'Tarmogoyf', type: 'Creature', rarity: 'Mythic', price: '$45.00', quantity: 2 },
-  { id: 3, name: 'Force of Will', type: 'Instant', rarity: 'Mythic', price: '$85.00', quantity: 1 },
-  { id: 4, name: 'Path to Exile', type: 'Instant', rarity: 'Uncommon', price: '$3.50', quantity: 4 },
-  { id: 5, name: 'Snapcaster Mage', type: 'Creature', rarity: 'Rare', price: '$25.00', quantity: 3 },
-  { id: 6, name: 'Brainstorm', type: 'Instant', rarity: 'Common', price: '$1.00', quantity: 4 },
-];
+// Utility function for rarity colors (moved from mock data)
+const getRarityColor = (rarity: string): string => {
+  switch (rarity.toLowerCase()) {
+    case 'mythic':
+      return '#ff6b35';
+    case 'rare':
+      return '#ffd700';
+    case 'uncommon':
+      return '#c0c0c0';
+    case 'common':
+      return '#000000';
+    default:
+      return '#666666';
+  }
+};
 
 const Dropdown = ({ options, value, onChange }: {
   options: string[];
@@ -33,43 +42,242 @@ const Dropdown = ({ options, value, onChange }: {
   </div>
 );
 
-const CardGrid = () => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-    {sampleCards.map((card) => (
-      <motion.div
-        key={card.id}
-        className="bg-slate-800/30 border border-white/10 rounded-lg p-3 hover:bg-slate-800/50 transition-colors duration-200 group"
-        whileHover={{ y: -2, scale: 1.02 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      >
-        {/* Card image placeholder */}
-        <div className="w-full aspect-[5/7] bg-slate-700 rounded mb-2 flex items-center justify-center">
-          <span className="text-slate-500 text-xs">Card Image</span>
-        </div>
+interface CardGridProps {
+  cards?: CollectionCard[];
+  variant?: 'empty' | 'one-filter' | 'three-filters' | 'mobile';
+  isLoading?: boolean;
+  error?: Error | null;
+}
 
-        {/* Card info */}
-        <div className="space-y-1">
-          <h3 className="text-sm font-medium text-white group-hover:text-violet-300 transition-colors">
-            {card.name}
-          </h3>
-          <p className="text-xs text-slate-400">{card.type}</p>
-          <div className="flex items-center justify-between">
-            <span className={`text-xs px-2 py-0.5 rounded ${
-              card.rarity === 'Mythic' ? 'bg-red-500/20 text-red-400' :
-              card.rarity === 'Rare' ? 'bg-orange-500/20 text-orange-400' :
-              card.rarity === 'Uncommon' ? 'bg-slate-500/20 text-slate-400' :
-              'bg-gray-500/20 text-gray-400'
-            }`}>
-              {card.rarity}
-            </span>
-            <span className="text-xs text-green-400">{card.price}</span>
-          </div>
-          <div className="text-xs text-slate-500">Qty: {card.quantity}</div>
+// Performance optimization: Memoized card component
+const CardItem = memo(({ card, index, reducedMotion }: {
+  card: CollectionCard;
+  index: number;
+  reducedMotion: boolean;
+}) => (
+  <motion.div
+    className="card-item bg-slate-800/30 border border-white/10 rounded-lg p-3 hover:bg-slate-800/50 transition-colors duration-200 group relative overflow-hidden"
+    initial={reducedMotion ? {} : { opacity: 0, y: 20, scale: 0.9 }}
+    whileHover={reducedMotion ? {} : {
+      y: -4,
+      scale: 1.02,
+      boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(139, 92, 246, 0.1)"
+    }}
+    transition={{
+      type: "spring",
+      stiffness: 300,
+      damping: 20,
+      mass: 0.8
+    }}
+  >
+    {/* Card image */}
+    <div className="w-full aspect-[5/7] mb-2">
+      {card.image_uris?.normal ? (
+        <CardImageWithHover
+          name={card.name}
+          imageUris={card.image_uris}
+          size="normal"
+          className="w-full h-full"
+        />
+      ) : (
+        <div className="w-full h-full bg-slate-700 border border-white/10 rounded flex items-center justify-center">
+          <span className="text-xs text-slate-400">Card Image</span>
         </div>
-      </motion.div>
-    ))}
-  </div>
-);
+      )}
+    </div>
+
+    {/* Card info */}
+    <div className="space-y-1">
+      <h3 className="text-sm font-medium text-white group-hover:text-violet-300 transition-colors line-clamp-1">
+        {card.name}
+      </h3>
+
+      {/* Mana cost if available */}
+      {card.mana_cost && (
+        <div className="text-xs text-slate-400 font-mono">
+          {card.mana_cost}
+        </div>
+      )}
+
+      <p className="text-xs text-slate-400 line-clamp-1">{card.type_line}</p>
+
+      <div className="flex items-center justify-between">
+        <span
+          className={`text-xs px-2 py-0.5 rounded capitalize relative ${
+            card.rarity === 'mythic' ? 'animate-pulse' : ''
+          }`}
+          style={{
+            backgroundColor: `${getRarityColor(card.rarity)}20`,
+            color: getRarityColor(card.rarity)
+          }}
+        >
+          {card.rarity === 'mythic' && !reducedMotion && (
+            <motion.span
+              className="absolute -inset-0.5 bg-gradient-to-r from-red-600 to-orange-600 rounded blur-sm -z-10"
+              animate={{
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          )}
+          {card.rarity}
+        </span>
+        <span className="text-xs text-green-400 font-mono">
+          ${card.prices.usd}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-slate-500">Qty: {card.quantity}</span>
+        {card.foil_quantity && card.foil_quantity > 0 && (
+          <span className="text-amber-400 text-xs">✨ {card.foil_quantity} foil</span>
+        )}
+      </div>
+
+      {/* Set info */}
+      <div className="text-xs text-slate-600 uppercase tracking-wider">
+        {card.set_code}
+      </div>
+    </div>
+  </motion.div>
+));
+
+const CardGrid = ({ cards = [], variant = 'empty', isLoading = false, error = null }: CardGridProps) => {
+  const [scope, animate] = useAnimate();
+  const [visibleCount, setVisibleCount] = useState(24); // Start with 24 cards
+  const reducedMotion = useReducedMotion();
+
+  // For demo purposes, limit the display based on variant, but add windowing for performance
+  const displayCards = useMemo(() => {
+    let baseCards = cards;
+    if (variant === 'empty') baseCards = cards.slice(0, 6);
+    else if (variant === 'one-filter') baseCards = cards.slice(0, 12);
+
+    // For large collections, only render visible cards + buffer
+    return baseCards.slice(0, Math.min(visibleCount, baseCards.length));
+  }, [cards, variant, visibleCount]);
+
+  // Load more cards when scrolling near the bottom
+  const handleLoadMore = useCallback(() => {
+    setVisibleCount(prev => Math.min(prev + 24, cards.length));
+  }, [cards.length]);
+
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && visibleCount < cards.length) {
+          handleLoadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const sentinel = document.getElementById('load-more-sentinel');
+    if (sentinel) {
+      observer.observe(sentinel);
+    }
+
+    return () => observer.disconnect();
+  }, [visibleCount, cards.length, handleLoadMore]);
+
+  // Animate cards in with stagger when they change (respects prefers-reduced-motion)
+  useEffect(() => {
+    if (scope.current && !reducedMotion) {
+      animate(
+        ".card-item",
+        { opacity: 1, y: 0, scale: 1 },
+        {
+          delay: stagger(0.05),
+          duration: 0.4,
+          type: "spring",
+          stiffness: 300,
+          damping: 20
+        }
+      );
+    } else if (scope.current && reducedMotion) {
+      // Instant reveal for reduced motion users
+      animate(
+        ".card-item",
+        { opacity: 1, y: 0, scale: 1 },
+        { duration: 0 }
+      );
+    }
+  }, [displayCards.length, animate, scope, reducedMotion]);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-8 h-8 border-2 border-slate-600 border-t-violet-500 rounded-full mr-3"
+        />
+        <span className="text-slate-400">Loading cards...</span>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <AlertCircle className="w-8 h-8 text-orange-400 mr-3" />
+        <div className="text-center">
+          <p className="text-slate-400 mb-2">API currently unavailable</p>
+          <p className="text-xs text-slate-500">Cards will appear once the backend is running</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state
+  if (!cards.length) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center">
+          <p className="text-slate-400 mb-2">No cards found</p>
+          <p className="text-xs text-slate-500">Try adjusting your search or filters</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div ref={scope} className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+        {displayCards.map((card, index) => (
+          <CardItem
+            key={card.id}
+            card={card}
+            index={index}
+            reducedMotion={reducedMotion}
+          />
+        ))}
+      </div>
+
+      {/* Load more sentinel for infinite scroll */}
+      {visibleCount < cards.length && (
+        <div
+          id="load-more-sentinel"
+          className="h-10 flex items-center justify-center text-slate-400"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-6 h-6 border-2 border-slate-600 border-t-violet-500 rounded-full"
+          />
+          <span className="ml-2 text-sm">Loading more cards...</span>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export interface CollectionProps {
   variant?: 'empty' | 'one-filter' | 'three-filters' | 'mobile';
@@ -90,6 +298,44 @@ export const Collection = ({ variant = 'empty' }: CollectionProps) => {
   );
   const [sortBy, setSortBy] = useState('Name (A-Z)');
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Build search query from filters
+  const searchQuery = useMemo(() => {
+    let query = searchTerm.trim();
+
+    // Add color filters to search query
+    if (activeColors.length > 0) {
+      const colorQuery = activeColors.map(color => {
+        const colorMap = { W: 'white', U: 'blue', B: 'black', R: 'red', G: 'green', C: 'colorless' };
+        return `c:${colorMap[color] || color.toLowerCase()}`;
+      }).join(' OR ');
+      query = query ? `${query} (${colorQuery})` : `(${colorQuery})`;
+    }
+
+    return query;
+  }, [searchTerm, activeColors]);
+
+  // Use API hooks
+  const searchQuery_enabled = Boolean(searchQuery);
+  const {
+    data: searchResults = [],
+    isLoading: isSearchLoading,
+    error: searchError
+  } = useCardsSearch({
+    q: searchQuery,
+    limit: 60
+  });
+
+  const {
+    data: defaultCollection = [],
+    isLoading: isDefaultLoading,
+    error: defaultError
+  } = useDefaultCollection();
+
+  // Choose which data to use
+  const apiCards = searchQuery_enabled ? searchResults : defaultCollection;
+  const isLoading = searchQuery_enabled ? isSearchLoading : isDefaultLoading;
+  const error = searchQuery_enabled ? searchError : defaultError;
 
   const filterChips: { label: string; onRemove(): void }[] = [];
   if (activeColors.length > 0) {
@@ -120,9 +366,53 @@ export const Collection = ({ variant = 'empty' }: CollectionProps) => {
     });
   }
 
-  const resultCount = filterChips.length === 0 ? { showing: 1203, total: 1203 } :
-                     filterChips.length === 1 ? { showing: 847, total: 1203 } :
-                     { showing: 247, total: 1203 };
+  // Apply client-side filters and sorting to API results
+  const filteredCards = useMemo(() => {
+    if (!apiCards.length) return [];
+
+    let cards = apiCards.filter(card => {
+      // Rarity filter (colors and search are handled by API query)
+      if (rarity !== 'Any Rarity') {
+        if (card.rarity !== rarity.toLowerCase()) return false;
+      }
+
+      // Price range filter
+      if (priceRange !== 'Any Price') {
+        const price = parseFloat(card.prices.usd);
+        switch (priceRange) {
+          case '$0-5': return price <= 5;
+          case '$5-25': return price > 5 && price <= 25;
+          case '$25+': return price > 25;
+          default: return true;
+        }
+      }
+
+      return true;
+    });
+
+    // Sort cards
+    if (sortBy !== 'Name (A-Z)') {
+      cards = [...cards].sort((a, b) => {
+        switch (sortBy) {
+          case 'Price (Low-High)':
+            return parseFloat(a.prices.usd) - parseFloat(b.prices.usd);
+          case 'Price (High-Low)':
+            return parseFloat(b.prices.usd) - parseFloat(a.prices.usd);
+          case 'CMC (Low-High)':
+            return a.cmc - b.cmc;
+          default:
+            return a.name.localeCompare(b.name);
+        }
+      });
+    }
+
+    return cards;
+  }, [apiCards, rarity, priceRange, sortBy]);
+
+  // Calculate result counts
+  const totalCards = filteredCards.length;
+
+  const resultCount = { showing: filteredCards.length, total: totalCards };
 
   const filterControlsElement = useMemo(() => (
     <div className="flex items-center gap-4">
@@ -179,5 +469,12 @@ export const Collection = ({ variant = 'empty' }: CollectionProps) => {
     setResultCounter(resultCount);
   }, [setFilterControls, setFilterChips, setResultCounter, filterControlsElement, activeColors, rarity, priceRange, searchTerm]);
 
-  return <CardGrid />;
+  return (
+    <CardGrid
+      cards={filteredCards}
+      variant={variant}
+      isLoading={isLoading}
+      error={error}
+    />
+  );
 };

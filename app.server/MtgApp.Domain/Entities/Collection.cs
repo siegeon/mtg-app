@@ -99,7 +99,8 @@ public class CollectionCard
     public List<CollectionCardPrice> PriceHistory { get; set; } = [];
 
     // Computed properties
-    public int CurrentMarketValue => Card.Price.HasValue ? (int)(Card.Price * 100 * Quantity) : 0;
+    // TODO: Parse USD price from Card.PricesJson when needed
+    public int CurrentMarketValue => 0; // Placeholder - will be computed from Card.PricesJson
     public int ProfitLoss => PurchasePrice.HasValue ? CurrentMarketValue - (PurchasePrice.Value * Quantity) : 0;
 }
 

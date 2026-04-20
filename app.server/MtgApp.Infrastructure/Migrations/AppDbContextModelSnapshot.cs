@@ -76,59 +76,28 @@ namespace MtgApp.Infrastructure.Migrations
 
             modelBuilder.Entity("MtgApp.Domain.Entities.Card", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Artist")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("CollectorNumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("ColorIdentity")
+                    b.Property<string>("BulkDataTimestamp")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<decimal>("Cmc")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("Colors")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
-                    b.Property<int>("ConvertedManaCost")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FlavorText")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("ImageUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<bool>("IsDigital")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Keywords")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("Layout")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Legalities")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                    b.Property<string>("ImageUrisJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("ManaCost")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
@@ -137,52 +106,24 @@ namespace MtgApp.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<int?>("Power")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("OracleId")
+                        .HasColumnType("uuid");
 
-                    b.Property<decimal?>("Price")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
+                    b.Property<string>("PricesJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("Rarity")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("ScryfallId")
-                        .HasMaxLength(36)
-                        .HasColumnType("character varying(36)");
-
-                    b.Property<string>("SearchText")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("text")
-                        .HasComputedColumnSql("lower(coalesce(\"Name\", '') || ' ' || coalesce(\"Type\", '') || ' ' || coalesce(\"Text\", '') || ' ' || coalesce(\"Keywords\", '') || ' ' || coalesce(\"Subtypes\", '') || ' ' || coalesce(\"Artist\", '') || ' ' || coalesce(\"FlavorText\", ''))", true);
-
-                    b.Property<string>("Set")
+                    b.Property<string>("SetCode")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
-                    b.Property<string>("SetName")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Subtypes")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Supertypes")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Text")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<int?>("Toughness")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Type")
+                    b.Property<string>("TypeLine")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
@@ -192,41 +133,36 @@ namespace MtgApp.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ColorIdentity");
+                    b.HasIndex("BulkDataTimestamp");
 
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("ColorIdentity"), "gin");
+                    b.HasIndex("Cmc");
 
                     b.HasIndex("Colors");
 
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Colors"), "gin");
+                    b.HasIndex("Id")
+                        .IsUnique();
 
-                    b.HasIndex("ConvertedManaCost");
+                    b.HasIndex("ImageUrisJson");
 
-                    b.HasIndex("Keywords");
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("ImageUrisJson"), "gin");
 
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Keywords"), "gin");
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_Cards_Name_FTS")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english");
 
-                    b.HasIndex("Legalities");
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Name"), "gin");
 
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Legalities"), "gin");
+                    b.HasIndex("OracleId");
 
-                    b.HasIndex("Name");
+                    b.HasIndex("PricesJson");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("PricesJson"), "gin");
 
                     b.HasIndex("Rarity");
 
-                    b.HasIndex("ScryfallId")
-                        .IsUnique();
+                    b.HasIndex("SetCode");
 
-                    b.HasIndex("SearchText")
-                        .HasDatabaseName("IX_Cards_SearchText_FTS");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchText"), "gin");
-
-                    b.HasIndex("Set");
-
-                    b.HasIndex("Type");
-
-                    b.HasIndex("Name", "Set");
+                    b.HasIndex("TypeLine");
 
                     b.ToTable("Cards");
                 });
@@ -324,8 +260,8 @@ namespace MtgApp.Infrastructure.Migrations
                         .HasPrecision(8, 4)
                         .HasColumnType("double precision");
 
-                    b.Property<int?>("CardId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("CardId")
+                        .HasColumnType("uuid");
 
                     b.Property<double>("ConfidenceScore")
                         .HasPrecision(5, 4)
@@ -334,8 +270,8 @@ namespace MtgApp.Infrastructure.Migrations
                     b.Property<DateTime?>("CorrectedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("CorrectedCardId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("CorrectedCardId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CorrectedName")
                         .HasMaxLength(200)
