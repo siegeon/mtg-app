@@ -2,37 +2,68 @@ namespace MtgApp.Domain.Entities;
 
 public class Card
 {
-    public int Id { get; set; }
+    /// <summary>
+    /// Scryfall UUID - primary key
+    /// </summary>
+    public required Guid Id { get; set; }
+
+    /// <summary>
+    /// Oracle ID - groups printings of the same card
+    /// </summary>
+    public required Guid OracleId { get; set; }
+
+    /// <summary>
+    /// Card name
+    /// </summary>
     public required string Name { get; set; }
-    public required string ManaCost { get; set; }
-    public int ConvertedManaCost { get; set; }
-    public required string Type { get; set; }
-    public string? Text { get; set; }
-    public int? Power { get; set; }
-    public int? Toughness { get; set; }
-    public required string Set { get; set; }
+
+    /// <summary>
+    /// Mana cost (e.g. "{1}{W}{U}")
+    /// </summary>
+    public string? ManaCost { get; set; }
+
+    /// <summary>
+    /// Converted mana cost / mana value
+    /// </summary>
+    public decimal Cmc { get; set; }
+
+    /// <summary>
+    /// Type line (e.g. "Legendary Creature — Human Wizard")
+    /// </summary>
+    public required string TypeLine { get; set; }
+
+    /// <summary>
+    /// Card colors as array (e.g. ["W","U"])
+    /// </summary>
+    public string[] Colors { get; set; } = [];
+
+    /// <summary>
+    /// Card rarity (common, uncommon, rare, mythic)
+    /// </summary>
     public required string Rarity { get; set; }
-    public string? ImageUrl { get; set; }
 
-    // Enhanced search properties
-    public string? ScryfallId { get; set; }
-    public string? Colors { get; set; } // JSON array: ["W","U"] or comma-separated
-    public string? ColorIdentity { get; set; } // JSON array: ["W","U"]
-    public string? Keywords { get; set; } // JSON array: ["Flying","Vigilance"]
-    public string? Supertypes { get; set; } // Legendary, Basic, Snow, etc.
-    public string? Subtypes { get; set; } // Human, Wizard, Equipment, etc.
-    public string? Artist { get; set; }
-    public string? FlavorText { get; set; }
-    public decimal? Price { get; set; } // USD price
-    public string? Legalities { get; set; } // JSON object: {"standard":"legal","modern":"legal"}
-    public string? SetName { get; set; } // Full set name
-    public string? CollectorNumber { get; set; }
-    public bool IsDigital { get; set; } = false;
-    public string? Layout { get; set; } // normal, split, flip, transform, etc.
+    /// <summary>
+    /// Set code (e.g. "NEO")
+    /// </summary>
+    public required string SetCode { get; set; }
 
-    // Full-text search field (computed)
-    public string? SearchText { get; set; }
+    /// <summary>
+    /// Image URIs as JSONB (small, normal, large, png, art_crop, border_crop)
+    /// </summary>
+    public required string ImageUrisJson { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    /// <summary>
+    /// Prices as JSONB (usd, usd_foil, eur, eur_foil, tix)
+    /// </summary>
+    public required string PricesJson { get; set; }
+
+    /// <summary>
+    /// Bulk data timestamp for idempotency
+    /// </summary>
+    public required string BulkDataTimestamp { get; set; }
+
+    /// <summary>
+    /// Last updated timestamp
+    /// </summary>
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

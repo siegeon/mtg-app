@@ -26,58 +26,51 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Card>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).IsRequired();
+            entity.Property(e => e.OracleId).IsRequired();
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
-            entity.Property(e => e.ManaCost).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Type).IsRequired().HasMaxLength(200);
-            entity.Property(e => e.Set).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.ManaCost).HasMaxLength(50);
+            entity.Property(e => e.TypeLine).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.SetCode).IsRequired().HasMaxLength(20);
             entity.Property(e => e.Rarity).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Text).HasMaxLength(2000);
-            entity.Property(e => e.ImageUrl).HasMaxLength(500);
+            entity.Property(e => e.BulkDataTimestamp).IsRequired().HasMaxLength(50);
 
-            // Enhanced search properties
-            entity.Property(e => e.ScryfallId).HasMaxLength(36);
-            entity.Property(e => e.Colors).HasMaxLength(50);
-            entity.Property(e => e.ColorIdentity).HasMaxLength(50);
-            entity.Property(e => e.Keywords).HasMaxLength(500);
-            entity.Property(e => e.Supertypes).HasMaxLength(200);
-            entity.Property(e => e.Subtypes).HasMaxLength(200);
-            entity.Property(e => e.Artist).HasMaxLength(200);
-            entity.Property(e => e.FlavorText).HasMaxLength(1000);
-            entity.Property(e => e.Price).HasPrecision(10, 2);
-            entity.Property(e => e.Legalities).HasMaxLength(1000);
-            entity.Property(e => e.SetName).HasMaxLength(200);
-            entity.Property(e => e.CollectorNumber).HasMaxLength(20);
-            entity.Property(e => e.Layout).HasMaxLength(50);
+            // JSONB columns for Postgres
+            entity.Property(e => e.ImageUrisJson)
+                .IsRequired()
+                .HasColumnType("jsonb");
 
-            // Computed column for full-text search
-            entity.Property(e => e.SearchText).HasComputedColumnSql(
-                "lower(coalesce(\"Name\", '') || ' ' || coalesce(\"Type\", '') || ' ' || coalesce(\"Text\", '') || ' ' || coalesce(\"Keywords\", '') || ' ' || coalesce(\"Subtypes\", '') || ' ' || coalesce(\"Artist\", '') || ' ' || coalesce(\"FlavorText\", ''))",
-                stored: true);
+            entity.Property(e => e.PricesJson)
+                .IsRequired()
+                .HasColumnType("jsonb");
+
+            // Store Colors as JSON array
+            entity.Property(e => e.Colors)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                .HasMaxLength(100);
 
             // Indexes for search performance
+            entity.HasIndex(e => e.Id).IsUnique();
+            entity.HasIndex(e => e.OracleId);
             entity.HasIndex(e => e.Name);
-            entity.HasIndex(e => e.Type);
-            entity.HasIndex(e => e.Set);
-            entity.HasIndex(e => e.ScryfallId).IsUnique();
-            entity.HasIndex(e => e.Colors);
-            entity.HasIndex(e => e.ConvertedManaCost);
+            entity.HasIndex(e => e.TypeLine);
+            entity.HasIndex(e => e.SetCode);
             entity.HasIndex(e => e.Rarity);
-            entity.HasIndex(e => e.SearchText); // For full-text search
-            entity.HasIndex(e => new { e.Name, e.Set }); // Composite index for name+set queries
+            entity.HasIndex(e => e.Cmc);
+            entity.HasIndex(e => e.Colors);
+            entity.HasIndex(e => e.BulkDataTimestamp);
 
-            // PostgreSQL full-text search index (will be created via migration)
-            entity.HasIndex(e => e.SearchText)
-                  .HasDatabaseName("IX_Cards_SearchText_FTS")
-                  .HasMethod("gin");
+            // PostgreSQL full-text search index on name
+            entity.HasIndex(e => e.Name)
+                  .HasDatabaseName("IX_Cards_Name_FTS")
+                  .HasMethod("gin")
+                  .IsTsVectorExpressionIndex("english");
 
-            // Add GIN index for JSON columns for better filtering performance
-            if (Database.IsNpgsql())
-            {
-                entity.HasIndex(e => e.Colors).HasMethod("gin");
-                entity.HasIndex(e => e.ColorIdentity).HasMethod("gin");
-                entity.HasIndex(e => e.Keywords).HasMethod("gin");
-                entity.HasIndex(e => e.Legalities).HasMethod("gin");
-            }
+            // GIN indexes for JSONB columns (PostgreSQL)
+            entity.HasIndex(e => e.ImageUrisJson).HasMethod("gin");
+            entity.HasIndex(e => e.PricesJson).HasMethod("gin");
         });
 
         // Configure Deck entity

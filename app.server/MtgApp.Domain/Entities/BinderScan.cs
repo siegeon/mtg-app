@@ -57,7 +57,7 @@ public class DetectedCard
     public int Id { get; set; }
     public int BinderScanId { get; set; }
     public int ScanImageId { get; set; }
-    public int? CardId { get; set; } // Null if card couldn't be identified
+    public Guid? CardId { get; set; } // Null if card couldn't be identified
     public required string DetectedName { get; set; }
     public string? DetectedSet { get; set; }
     public double ConfidenceScore { get; set; } // 0.0 to 1.0
@@ -73,7 +73,7 @@ public class DetectedCard
     // Manual correction tracking
     public string? CorrectedName { get; set; }
     public string? CorrectedSet { get; set; }
-    public int? CorrectedCardId { get; set; }
+    public Guid? CorrectedCardId { get; set; }
     public DateTime? CorrectedAt { get; set; }
     public bool IsManuallyVerified { get; set; }
 
