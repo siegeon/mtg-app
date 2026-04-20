@@ -1,16 +1,21 @@
 using MtgApp.Infrastructure.Data;
+using MtgApp.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add service defaults (Aspire)
-builder.AddServiceDefaults();
+// Temporary SQLite for MVP testing (comment out for Aspire)
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=mtgapp.db"));
 
-// Add database
-builder.AddNpgsqlDbContext<AppDbContext>("mtgdb");
+// Add service defaults (Aspire) - commented out for MVP testing
+// builder.AddServiceDefaults();
+// builder.AddNpgsqlDbContext<AppDbContext>("mtgdb");
 
 // Add services
+builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<CardSearchService>();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
@@ -23,8 +28,43 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Ensure database is created and migrated
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        context.Database.Migrate();
+
+        // Seed test data if no decks exist
+        if (!context.Decks.Any())
+        {
+            var testDeck = new MtgApp.Domain.Entities.Deck
+            {
+                Name = "My Test Deck",
+                Description = "Test deck for MVP development",
+                Format = "Standard",
+                UserId = "test-user",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            context.Decks.Add(testDeck);
+            await context.SaveChangesAsync();
+
+            logger.LogInformation("Seeded test deck with ID {DeckId}", testDeck.Id);
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Failed to migrate/seed database on startup");
+    }
+}
+
 // Configure the HTTP request pipeline
-app.MapDefaultEndpoints();
+// app.MapDefaultEndpoints(); // Commented out for MVP testing
 
 if (app.Environment.IsDevelopment())
 {
@@ -33,18 +73,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 
+// Map controllers
+app.MapControllers();
+
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok("MTG App API is running"));
-
-// Sample MTG endpoint
-app.MapGet("/api/cards", () =>
-{
-    return Results.Ok(new[]
-    {
-        new { Id = 1, Name = "Lightning Bolt", ManaCost = "R", Type = "Instant" },
-        new { Id = 2, Name = "Counterspell", ManaCost = "UU", Type = "Instant" },
-        new { Id = 3, Name = "Giant Growth", ManaCost = "G", Type = "Instant" },
-    });
-}).WithName("GetCards").WithOpenApi();
 
 app.Run();
