@@ -1,0 +1,12 @@
+/home/siegeon/dev/mtg-app/app.server/MtgApp.Domain/bin/Release/net10.0/MtgApp.Domain.deps.json
+/home/siegeon/dev/mtg-app/app.server/MtgApp.Domain/bin/Release/net10.0/MtgApp.Domain.dll
+/home/siegeon/dev/mtg-app/app.server/MtgApp.Domain/bin/Release/net10.0/MtgApp.Domain.pdb
+/home/siegeon/dev/mtg-app/app.server/MtgApp.Domain/obj/Release/net10.0/MtgApp.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/home/siegeon/dev/mtg-app/app.server/MtgApp.Domain/obj/Release/net10.0/MtgApp.Domain.AssemblyInfoInputs.cache
+/home/siegeon/dev/mtg-app/app.server/MtgApp.Domain/obj/Release/net10.0/MtgApp.Domain.AssemblyInfo.cs
+/home/siegeon/dev/mtg-app/app.server/MtgApp.Domain/obj/Release/net10.0/MtgApp.Domain.csproj.CoreCompileInputs.cache
+/home/siegeon/dev/mtg-app/app.server/MtgApp.Domain/obj/Release/net10.0/MtgApp.Domain.sourcelink.json
+/home/siegeon/dev/mtg-app/app.server/MtgApp.Domain/obj/Release/net10.0/MtgApp.Domain.dll
+/home/siegeon/dev/mtg-app/app.server/MtgApp.Domain/obj/Release/net10.0/refint/MtgApp.Domain.dll
+/home/siegeon/dev/mtg-app/app.server/MtgApp.Domain/obj/Release/net10.0/MtgApp.Domain.pdb
+/home/siegeon/dev/mtg-app/app.server/MtgApp.Domain/obj/Release/net10.0/ref/MtgApp.Domain.dll

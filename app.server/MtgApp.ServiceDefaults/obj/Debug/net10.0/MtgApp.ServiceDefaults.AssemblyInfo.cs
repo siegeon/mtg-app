@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MtgApp.ServiceDefaults")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2127dee2098f02cf94cb55ce7b2fe5c67cc030e4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e87b4b2fdd2ff62bd5b4b6207761829fa9e4d7e9")]
 [assembly: System.Reflection.AssemblyProductAttribute("MtgApp.ServiceDefaults")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MtgApp.ServiceDefaults")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,0 +1,6 @@
+{
+  "MtgApp.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/siegeon\/dev\/mtg-app\/app.server\/MtgApp.Api",
+  "MtgApp.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/siegeon\/dev\/mtg-app\/app.server\/MtgApp.Domain",
+  "MtgApp.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/siegeon\/dev\/mtg-app\/app.server\/MtgApp.Infrastructure",
+  "MtgApp.ServiceDefaults, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/siegeon\/dev\/mtg-app\/app.server\/MtgApp.ServiceDefaults"
+}

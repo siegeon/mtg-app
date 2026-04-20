@@ -50,15 +50,11 @@
           "dependencies": {
             "Aspire.Hosting": {
               "target": "Package",
-              "version": "[13.0.0, )"
-            },
-            "Aspire.Hosting.NodeJs": {
-              "target": "Package",
-              "version": "[9.5.2, )"
+              "version": "[13.2.2, )"
             },
             "Aspire.Hosting.PostgreSQL": {
               "target": "Package",
-              "version": "[13.0.0, )"
+              "version": "[13.2.2, )"
             }
           },
           "imports": [

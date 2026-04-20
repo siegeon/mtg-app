@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Aspire integration -->
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.0.0" />
+
+    <!-- AI/ML providers -->
+    <PackageReference Include="OpenAI" Version="2.10.0" />
+    <PackageReference Include="Azure.AI.Vision.ImageAnalysis" Version="1.0.0-beta.3" />
+
+    <!-- Image processing -->
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
+    <PackageReference Include="SixLabors.ImageSharp.Web" Version="3.1.2" />
+
+    <!-- HTTP client for external APIs -->
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="10.0.0" />
+
+    <!-- Entity Framework -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" />
+
+    <!-- Swagger -->
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+
+    <!-- Validation -->
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MtgApp.ServiceDefaults\MtgApp.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\MtgApp.Domain\MtgApp.Domain.csproj" />
+    <ProjectReference Include="..\MtgApp.Infrastructure\MtgApp.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
