@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronUp,
   ChevronDown,
+  ChevronRight,
   Calendar,
   DollarSign,
   Library,
@@ -35,7 +36,7 @@ const DeckRow: React.FC<{
   return (
     <motion.tr
       className={cn(
-        'border-b border-gray-700/50 cursor-pointer transition-colors',
+        'border-b border-gray-700/50 cursor-pointer transition-colors relative',
         'hover:bg-violet-500/5 hover:border-violet-500/20',
         isSelected && 'bg-violet-500/10 border-violet-500/30'
       )}
@@ -46,6 +47,16 @@ const DeckRow: React.FC<{
       whileTap="tap"
       transition={transition}
     >
+      {/* Hover indicator - icon and accent line */}
+      <motion.div
+        className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center z-20"
+        initial={{ opacity: 0, x: -10 }}
+        whileHover={{ opacity: 1, x: 0 }}
+        transition={{ duration: DURATIONS.micro, ease: EASINGS.easeOut }}
+      >
+        <div className="w-1 h-8 bg-violet-400 rounded-r-sm" />
+        <ChevronRight size={16} className="text-violet-400 ml-1" />
+      </motion.div>
       {/* Deck Name & Commander */}
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
