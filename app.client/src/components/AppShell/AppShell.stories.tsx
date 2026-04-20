@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { AppShell } from '../../../components/AppShell/AppShell';
+import { AppShell } from './AppShell';
 
 const meta = {
   title: 'Prototypes/AppShell/AppShell',

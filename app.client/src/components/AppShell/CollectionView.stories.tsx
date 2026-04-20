@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { CollectionView } from '../../../components/AppShell/CollectionView';
+import { CollectionView } from './CollectionView';
 
 const meta = {
   title: 'Prototypes/AppShell/CollectionView',

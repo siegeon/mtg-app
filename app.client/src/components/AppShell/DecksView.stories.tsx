@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { DecksView } from '../../../components/AppShell/DecksView';
+import { DecksView } from './DecksView';
 
 const meta = {
   title: 'Prototypes/AppShell/DecksView',
