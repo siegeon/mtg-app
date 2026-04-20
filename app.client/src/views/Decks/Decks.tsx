@@ -464,62 +464,64 @@ export const Decks: React.FC = () => {
       {/* Main Layout - Two Columns */}
       <div className='grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] gap-6'>
         {/* Left Column - Deck Table */}
-        <div className='min-w-0 overflow-x-auto flex flex-col'>
-          {/* Table */}
-          <div className="flex-1 overflow-auto">
-            <table className="w-full">
-              <thead className="sticky top-0 bg-slate-950/95 border-b border-gray-700">
-                <tr>
-                  <th className="px-4 py-3 text-left">
-                    <SortHeader
-                      label="Deck"
-                      field="name"
-                      sortField={sortField}
-                      sortDirection={sortDirection}
-                      onSort={handleSort}
+        <div className='p-6'>
+          <div className='min-w-0 overflow-x-clip isolate flex flex-col'>
+            {/* Table */}
+            <div className="flex-1 overflow-auto">
+              <table className="w-full">
+                <thead className="sticky top-0 bg-slate-950/95 border-b border-gray-700">
+                  <tr>
+                    <th className="px-4 py-3 text-left">
+                      <SortHeader
+                        label="Deck"
+                        field="name"
+                        sortField={sortField}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                      />
+                    </th>
+                    <th className="px-4 py-3 text-left">
+                      <SortHeader
+                        label="Format"
+                        field="format"
+                        sortField={sortField}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                      />
+                    </th>
+                    <th className="px-4 py-3 text-left">
+                      <SortHeader
+                        label="Value"
+                        field="totalValue"
+                        sortField={sortField}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                      />
+                    </th>
+                    <th className="px-4 py-3 text-left">
+                      <SortHeader
+                        label="Last Edited"
+                        field="lastEdited"
+                        sortField={sortField}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                      />
+                    </th>
+                    <th className="px-4 py-3 w-16"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredAndSortedDecks.map((deck) => (
+                    <DeckRow
+                      key={deck.id}
+                      deck={deck}
+                      isSelected={selectedDeck?.id === deck.id}
+                      onClick={() => setSelectedDeck(deck)}
                     />
-                  </th>
-                  <th className="px-4 py-3 text-left">
-                    <SortHeader
-                      label="Format"
-                      field="format"
-                      sortField={sortField}
-                      sortDirection={sortDirection}
-                      onSort={handleSort}
-                    />
-                  </th>
-                  <th className="px-4 py-3 text-left">
-                    <SortHeader
-                      label="Value"
-                      field="totalValue"
-                      sortField={sortField}
-                      sortDirection={sortDirection}
-                      onSort={handleSort}
-                    />
-                  </th>
-                  <th className="px-4 py-3 text-left">
-                    <SortHeader
-                      label="Last Edited"
-                      field="lastEdited"
-                      sortField={sortField}
-                      sortDirection={sortDirection}
-                      onSort={handleSort}
-                    />
-                  </th>
-                  <th className="px-4 py-3 w-16"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredAndSortedDecks.map((deck) => (
-                  <DeckRow
-                    key={deck.id}
-                    deck={deck}
-                    isSelected={selectedDeck?.id === deck.id}
-                    onClick={() => setSelectedDeck(deck)}
-                  />
-                ))}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 

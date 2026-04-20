@@ -127,9 +127,9 @@ export const AppShell: React.FC<AppShellProps> = ({
 }) => {
   const primaryAction = getPrimaryAction(activeNav);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-900/20 via-slate-900 to-black">
+    <div className="h-screen grid grid-cols-[auto_1fr] grid-rows-1 bg-gradient-to-br from-violet-900/20 via-slate-900 to-black">
       {/* Left Sidebar */}
-      <div className="fixed left-0 top-0 h-full w-56 bg-slate-950/90 border-r border-white/10 backdrop-blur-sm">
+      <aside className="h-screen w-56 bg-slate-950/90 border-r border-white/10 backdrop-blur-sm overflow-y-auto">
         <div className="flex flex-col h-full">
           {/* Logo/Brand Area */}
           <div className="h-16 px-6 flex items-center border-b border-white/10">
@@ -185,10 +185,10 @@ export const AppShell: React.FC<AppShellProps> = ({
             />
           </div>
         </div>
-      </div>
+      </aside>
 
       {/* Main Content Area */}
-      <div className="ml-56 min-h-screen">
+      <div className="flex flex-col min-h-0">
         {/* Top Bar - Three-zone header (adaptive rows) */}
         <header className="bg-slate-950/50 border-b border-white/10 backdrop-blur-sm">
           {/* Row 1: Breadcrumb */}
@@ -230,9 +230,9 @@ export const AppShell: React.FC<AppShellProps> = ({
         </header>
 
         {/* Main Content */}
-        <main className="p-6">
+        <main className="flex-1 min-h-0 overflow-y-auto p-6">
           {children || (
-            <div className="min-h-[calc(100vh-10rem)] flex items-center justify-center">
+            <div className="h-full flex items-center justify-center">
               <div className="text-center space-y-4">
                 <div className="w-16 h-16 bg-slate-800 rounded-lg mx-auto flex items-center justify-center">
                   <Library className="text-slate-500" size={32} />
