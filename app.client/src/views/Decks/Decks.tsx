@@ -96,7 +96,9 @@ const DeckRow: React.FC<{
           </div>
           <div className="min-w-0">
             <div className="font-medium text-white flex items-center gap-2">
-              {deck.name}
+              <span className="truncate max-w-[220px]" title={deck.name}>
+                {deck.name}
+              </span>
               <span className="text-lg">
                 {getColorIdentityDisplay(deck.colorIdentity)}
               </span>
@@ -460,9 +462,9 @@ export const Decks: React.FC = () => {
   return (
     <div className="relative h-full">
       {/* Main Layout - Two Columns */}
-      <div className="grid grid-cols-[1fr_400px] h-full">
+      <div className='grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] gap-6'>
         {/* Left Column - Deck Table */}
-        <div className="flex flex-col">
+        <div className='min-w-0 overflow-x-auto flex flex-col'>
           {/* Table */}
           <div className="flex-1 overflow-auto">
             <table className="w-full">
@@ -522,13 +524,13 @@ export const Decks: React.FC = () => {
         </div>
 
         {/* Right Column - Deck Preview */}
-        <div className="bg-slate-900/50 border-l border-gray-700/50">
+        <aside className='min-w-0 bg-slate-900/50 border-l border-gray-700/50'>
           <DeckPreview
             deck={selectedDeck}
             onCardHover={handleCardHover}
             onCardLeave={handleCardLeave}
           />
-        </div>
+        </aside>
       </div>
 
       {/* Card Hover Preview */}
