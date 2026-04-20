@@ -10,7 +10,10 @@ import {
   DollarSign,
   Settings,
   Plus,
-  ChevronRight
+  ChevronRight,
+  Bookmark,
+  Play,
+  Zap
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
@@ -22,6 +25,20 @@ interface AppShellProps {
   /** Main content to display */
   children?: React.ReactNode;
 }
+
+const getPrimaryAction = (activeNav?: string) => {
+  const actionMap = {
+    decks: { label: 'New Deck', icon: Plus },
+    collection: { label: 'Add Cards', icon: Plus },
+    cards: { label: 'Save Search', icon: Bookmark },
+    scan: { label: 'Start Scan', icon: Play },
+    storage: { label: 'New Location', icon: Plus },
+    'trade-scout': { label: 'New Match Rule', icon: Zap },
+    prices: { label: 'Add to Watchlist', icon: Plus }
+  };
+
+  return activeNav ? actionMap[activeNav as keyof typeof actionMap] : null;
+};
 
 const sidebarSections = [
   {
@@ -68,6 +85,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   activeNav,
   children
 }) => {
+  const primaryAction = getPrimaryAction(activeNav);
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-900/20 via-slate-900 to-black">
       {/* Left Sidebar */}
@@ -106,14 +124,16 @@ export const AppShell: React.FC<AppShellProps> = ({
           {/* Bottom Section */}
           <div className="p-4 border-t border-white/10 space-y-3">
             {/* Primary CTA Button */}
-            <motion.button
-              className="w-full bg-violet-500 hover:bg-violet-600 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center gap-2 transition-all duration-150"
-              whileHover={{ y: -1, boxShadow: '0 4px 12px rgba(139, 92, 246, 0.4)' }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Plus size={16} />
-              New Deck
-            </motion.button>
+            {primaryAction && (
+              <motion.button
+                className="w-full bg-violet-500 hover:bg-violet-600 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center gap-2 transition-all duration-150"
+                whileHover={{ y: -1, boxShadow: '0 4px 12px rgba(139, 92, 246, 0.4)' }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <primaryAction.icon size={16} />
+                {primaryAction.label}
+              </motion.button>
+            )}
 
             {/* Settings */}
             <NavItem

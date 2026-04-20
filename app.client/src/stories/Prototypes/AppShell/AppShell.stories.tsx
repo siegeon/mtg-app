@@ -62,8 +62,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    currentPage: 'Dashboard',
-    activeNav: undefined,
+    currentPage: 'Decks',
+    activeNav: 'decks',
   },
 };
 
@@ -85,6 +85,13 @@ export const ScanActive: Story = {
   args: {
     currentPage: 'Scan Cards',
     activeNav: 'scan',
+  },
+};
+
+export const TradeScoutActive: Story = {
+  args: {
+    currentPage: 'Trade Scout',
+    activeNav: 'trade-scout',
   },
 };
 
