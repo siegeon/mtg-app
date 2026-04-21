@@ -213,7 +213,7 @@ const DeckPreview: React.FC<{
   return (
     <div className="h-full flex flex-col">
       {/* Deck Header */}
-      <div className="p-6 border-b border-gray-700/50">
+      <div className="pb-6 border-b border-gray-700/50">
         <div className="flex items-start gap-4">
           <div className="w-16 h-16 rounded-lg bg-slate-700 overflow-hidden flex-shrink-0">
             {deck.thumbnail ? (
@@ -257,7 +257,7 @@ const DeckPreview: React.FC<{
       </div>
 
       {/* Key Cards Preview */}
-      <div className="flex-1 p-6">
+      <div className="flex-1 pt-6">
         <h3 className="text-lg font-semibold text-white mb-4">Key Cards</h3>
         <div className="space-y-3">
           {mockPreviewCards.slice(0, 8).map((card, index) => (
@@ -526,7 +526,7 @@ export const Decks: React.FC = () => {
         </div>
 
         {/* Right Column - Deck Preview */}
-        <aside className='min-w-0 bg-slate-900/50 border-l border-gray-700/50'>
+        <aside className='min-w-0 bg-slate-900/50 border-l border-gray-700/50 p-6'>
           <DeckPreview
             deck={selectedDeck}
             onCardHover={handleCardHover}

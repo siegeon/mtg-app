@@ -230,7 +230,7 @@ export const AppShell: React.FC<AppShellProps> = ({
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 min-h-0 overflow-y-auto p-6">
+        <main className="flex-1 min-h-0 overflow-y-auto">
           {children || (
             <div className="h-full flex items-center justify-center">
               <div className="text-center space-y-4">
